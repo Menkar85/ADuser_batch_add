@@ -1,4 +1,4 @@
-# version 0.1.1
+# version 0.1.3
 import logging
 from datetime import datetime
 
@@ -61,7 +61,8 @@ def create_ad_user(ou, upn_suffix, **kwargs):
                 'mail': kwargs['email'],
                 'userPrincipalName': f"{kwargs['cname']}@{upn_suffix}",
                 'sn': kwargs['surname'],
-                'givenName': str(kwargs['full_name'].split()[1])
+                'givenName': str(kwargs['full_name'].split()[1]),
+                'telephoneNumber': str(kwargs.get('phone')),
             })
             new_user.force_pwd_change_on_login()
             logging.info(f'User "{new_user.name}" created successfully')
@@ -154,8 +155,8 @@ if __name__ == '__main__':
     # Get data into variable
 
     user_data = []
-    for row in sheet.iter_rows(max_col=7, min_row=2):
-        cname, surname, passwd, full_name, eng_surname, group_year, email = row
+    for row in sheet.iter_rows(max_col=8, min_row=2):
+        cname, surname, passwd, full_name, phone, eng_surname, group_year, email = row
         if surname.value is not None:
             GROUP_YEAR = str(group_year.value)
             eng_surname = translit(str(surname.value), language_code='ru', reversed=True)
@@ -166,6 +167,7 @@ if __name__ == '__main__':
                 'surname': surname.value,
                 'passwd': passwd.value,
                 'full_name': full_name.value,
+                'phone': phone.value,
                 'eng_surname': eng_surname,
                 'group_year': group_year.value,
                 'email': email.value})
@@ -196,11 +198,11 @@ if __name__ == '__main__':
     for i in range(0, len(user_data)):
         try:
             create_ad_user(ou=user_creation_ou, upn_suffix=input_data['upn_suffix'], **user_data[i])
-            sheet.cell(row=i + 2, column=8, value='Y')
-            sheet.cell(row=i + 2, column=5, value=user_data[i]['eng_surname'])
+            sheet.cell(row=i + 2, column=9, value='Y')
+            sheet.cell(row=i + 2, column=6, value=user_data[i]['eng_surname'])
         except Exception as e:
-            sheet.cell(row=i + 2, column=8, value='N')
-            sheet.cell(row=i + 2, column=9, value=f'Error {e}')
+            sheet.cell(row=i + 2, column=9, value='N')
+            sheet.cell(row=i + 2, column=10, value=f'Error {e}')
             logging.error(f'User {user_data[i]["cname"]} not created due to {e}.')
 
     workbook.save(filename=f'{input_data['result_file']}.xlsx')
