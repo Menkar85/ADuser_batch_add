@@ -42,3 +42,14 @@ Before using the tool, ensure you have:
 2. Start the app, insert required info and press Start Import
 3. Check result file and log file for errors.
 
+Destination ou should be in folder format where "/" is root domain/subdomain root. 
+User container will be recorded as User, Staff container inside User container will be
+recorded as User/Staff and so on. 
+
+In case there is no such container - it will be created. It is highly recommended to created users into OU which first 
+to be created as the app will raise an error in case of username duplicates. In case of importing users into 
+existing container all duplicated will be marked as existing and no error will be raised.
+
+If you got duplicates error during import it is recommended to resolve all issues in source xlsx file, delete destination 
+OU and reimport again in order to get notified about duplicated. Such behavior is resulting from idempotent nature of 
+the app.
