@@ -87,7 +87,7 @@ def get_or_create_ou(ou_name, p_dn) -> ADContainer:
     try:
         ou = adcontainer.ADContainer.from_dn(f'OU={ou_name},{p_dn}')
         logging.info(f'OU "{ou_name}" already exists')
-        if ou_name == group and FIRST_RUN:
+        if ou_name == target and FIRST_RUN:
             FIRST_RUN = False
         return ou
     except Exception as e:
@@ -175,32 +175,27 @@ if __name__ == '__main__':
     logging.info(f'User data collected from excel workbook.')
 
     # Create OUs
-    if GROUP_YEAR:
-        year = GROUP_YEAR[-2:]
-        group = GROUP_YEAR[:-2]
-        parent_dn = f"DC={',DC='.join(input_data['domain'].split('.'))}"
-        destination_ou = input_data['destination_ou'].split('.')
-        destination_ou.reverse()
-        destination_ou_list = [destination_ou[i] for i in range(len(destination_ou)) if destination_ou[i]]
-        parents_ou = {}
+    destination_ou_list = [value for value in input_data['destination_ou'].split('/') if value]
+    parent_dn = f"DC={',DC='.join(input_data['domain'].split('.'))}"
+    if destination_ou_list:
+        target = destination_ou_list[-1]
+        target_ou = {}
         for i, dn in enumerate(destination_ou_list):
-            parents_ou[f'{i}'] = dn
-        if parents_ou:
-            for i in range(len(parents_ou)):
-                parent = get_or_create_ou(parents_ou[f'{i}'], parent_dn)
+            target_ou[f'{i}'] = dn
+        if target_ou:
+            for i in range(len(target_ou)):
+                parent = get_or_create_ou(target_ou[f'{i}'], parent_dn)
                 parent_dn = parent.dn
-        year_ou = get_or_create_ou(year, parent_dn)
-        group_ou = get_or_create_ou(group, year_ou.dn)
+            user_creation_ou = parent
     else:
-        print('No data about group and year')
-        logging.error('No data about group and year')
-        exit()
+        user_creation_ou = adcontainer.ADContainer.from_dn(parent_dn)
+        logging.info('Target OU for user creation is root.')
 
     # Insert data into AD and register success
 
     for i in range(0, len(user_data)):
         try:
-            create_ad_user(ou=group_ou, upn_suffix=input_data['upn_suffix'], **user_data[i])
+            create_ad_user(ou=user_creation_ou, upn_suffix=input_data['upn_suffix'], **user_data[i])
             sheet.cell(row=i + 2, column=8, value='Y')
             sheet.cell(row=i + 2, column=5, value=user_data[i]['eng_surname'])
         except Exception as e:
