@@ -51,51 +51,27 @@ class InputForm:
         entry_font = font.Font(family='Times New Roman', size=14)
 
         # labels and entries
-        label_servername = tk.Label(master, text="AD Server name:", font=label_font)
-        label_servername.grid(sticky='e', row=0, column=0, padx=(30, 5), pady=10)
-        entry_servername = tk.Entry(master, width=40, textvariable=self.ldap_server, font=entry_font)
-        entry_servername.grid(row=0, column=1, padx=(5, 30), pady=10, ipady=3)
+        widgets = [
+            ("AD Server name:", self.ldap_server),
+            ("Username:", self.username),
+            ("Password:", self.password),
+            ("Source filename:", self.source_file),
+            ("Destination OU:", self.destination_ou),
+            ("Domain:", self.domain),
+            ("UPN-suffix:", self.upn_suffix),
+            ("Results file name:", self.result_file),
+            ("Log file name:", self.logfile)
+        ]
 
-        label_username = tk.Label(master, text="Username:", font=label_font)
-        label_username.grid(sticky='e', row=1, column=0, padx=(30, 5), pady=10)
-        entry_username = tk.Entry(master, width=40, textvariable=self.username, font=entry_font)
-        entry_username.grid(row=1, column=1, padx=(5, 30), pady=10, ipady=3)
+        for row, (label_text, variable) in enumerate(widgets):
+            label = tk.Label(master, text=label_text, font=label_font)
+            label.grid(sticky='e', row=row, column=0, padx=(30, 5), pady=10)
 
-        label_password = tk.Label(master, text="Password:", font=label_font)
-        label_password.grid(sticky='e', row=2, column=0, padx=(30, 5), pady=10)
-        entry_password = tk.Entry(master, show='*', width=40, textvariable=self.password,
-                                  font=entry_font)  # Password should be masked
-        entry_password.grid(row=2, column=1, padx=(5, 30), pady=10, ipady=3)
-
-        label_source_filename = tk.Label(master, text="Source filename:", font=label_font)
-        label_source_filename.grid(sticky='e', row=3, column=0, padx=(30, 5), pady=10)
-        entry_source_filename = tk.Entry(master, width=36, textvariable=self.source_file, font=entry_font)
-        entry_source_filename.grid(row=3, sticky='w', column=1, padx=(5, 30), pady=10, ipady=3)
-
-        label_destination_ou = tk.Label(master, text="Destination OU:", font=label_font)
-        label_destination_ou.grid(sticky='e', row=4, column=0, padx=(30, 5), pady=10)
-        entry_destination_ou = tk.Entry(master, width=40, textvariable=self.destination_ou, font=entry_font)
-        entry_destination_ou.grid(row=4, column=1, padx=(5, 30), pady=10, ipady=3)
-
-        label_domain = tk.Label(master, text="Domain:", font=label_font)
-        label_domain.grid(sticky='e', row=5, column=0, padx=(30, 5), pady=10)
-        entry_domain = tk.Entry(master, width=40, textvariable=self.domain, font=entry_font)
-        entry_domain.grid(row=5, column=1, padx=(5, 30), pady=10, ipady=3)
-
-        label_upn = tk.Label(master, text="UPN-suffix:", font=label_font)
-        label_upn.grid(sticky='e', row=6, column=0, padx=(30, 5), pady=10)
-        entry_upn = tk.Entry(master, width=40, textvariable=self.upn_suffix, font=entry_font)
-        entry_upn.grid(row=6, column=1, padx=(5, 30), pady=10, ipady=3)
-
-        label_result_file = tk.Label(master, text="Results file name:", font=label_font)
-        label_result_file.grid(sticky='e', row=7, column=0, padx=(30, 5), pady=10)
-        entry_result_file = tk.Entry(master, width=40, textvariable=self.result_file, font=entry_font)
-        entry_result_file.grid(row=7, column=1, padx=(5, 30), pady=10, ipady=3)
-
-        label_logfile = tk.Label(master, text="Log file name:", font=label_font)
-        label_logfile.grid(sticky='e', row=8, column=0, padx=(30, 5), pady=10)
-        entry_logfile = tk.Entry(master, width=40, textvariable=self.logfile, font=entry_font)
-        entry_logfile.grid(row=8, column=1, padx=(5, 30), pady=10, ipady=3)
+            if label_text == "Password:":
+                entry = tk.Entry(master, show='*', width=40, textvariable=variable, font=entry_font)
+            else:
+                entry = tk.Entry(master, width=40, textvariable=variable, font=entry_font)
+            entry.grid(row=row, column=1, padx=(5, 30), pady=10, ipady=3)
 
         # buttons
 

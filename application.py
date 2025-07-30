@@ -49,7 +49,8 @@ def create_ad_user(ou, upn_suffix, **kwargs):
             if FIRST_RUN:
                 logging.error(
                     f'Unable to create User {kwargs["cname"]} as same cname already exists! Change cname for user!')
-                raise ValueError('Duplicate username detected. Change cname for user!')
+                raise ValueError(
+                    'Duplicate username detected. Change cname for user!')
             print(f'User "{kwargs['cname']}" already exists')
             logging.info(f'User "{kwargs['cname']}" already exists')
             return
@@ -137,7 +138,8 @@ if __name__ == '__main__':
 
     input_data = get_input_values()
 
-    logging.basicConfig(level=logging.INFO, filename=f'{input_data['logfile']}.txt', filemode='w')
+    logging.basicConfig(level=logging.INFO,
+                        filename=f'{input_data['logfile']}.txt', filemode='w')
 
     logging.info(f'Import started at {datetime.now()}')
     logging.info(f'Data import from {input_data['source_file']} started')
@@ -148,7 +150,8 @@ if __name__ == '__main__':
         password=input_data['password'],
         ssl=input_data['protocol'] == 'LDAPS',
     )
-    logging.info(f'LDAP server set to {input_data['ldap_server']} using {input_data['protocol']}')
+    logging.info(
+        f'LDAP server set to {input_data['ldap_server']} using {input_data['protocol']}')
 
     workbook = load_workbook(filename=f'{input_data['source_file']}')
     sheet = workbook.active
@@ -161,7 +164,8 @@ if __name__ == '__main__':
         cname, surname, passwd, full_name, phone, eng_surname, group_year, email = row
         if surname.value is not None:
             GROUP_YEAR = str(group_year.value)
-            eng_surname = translit(str(surname.value), language_code='ru', reversed=True)
+            eng_surname = translit(
+                str(surname.value), language_code='ru', reversed=True)
             cname = str(eng_surname) + str(group_year.value)
             email.value = ''.join([cname, '@', input_data['domain']])
             user_data.append({
@@ -179,7 +183,8 @@ if __name__ == '__main__':
     logging.info(f'User data collected from excel workbook.')
 
     # Create OUs
-    destination_ou_list = [value for value in input_data['destination_ou'].split('/') if value]
+    destination_ou_list = [
+        value for value in input_data['destination_ou'].split('/') if value]
     parent_dn = f"DC={',DC='.join(input_data['domain'].split('.'))}"
     if destination_ou_list:
         target = destination_ou_list[-1]
@@ -199,12 +204,14 @@ if __name__ == '__main__':
 
     for i in range(0, len(user_data)):
         try:
-            create_ad_user(ou=user_creation_ou, upn_suffix=input_data['upn_suffix'], **user_data[i])
+            create_ad_user(ou=user_creation_ou,
+                           upn_suffix=input_data['upn_suffix'], **user_data[i])
             sheet.cell(row=i + 2, column=9, value='Y')
             sheet.cell(row=i + 2, column=6, value=user_data[i]['eng_surname'])
         except Exception as e:
             sheet.cell(row=i + 2, column=9, value='N')
             sheet.cell(row=i + 2, column=10, value=f'Error {e}')
-            logging.error(f'User {user_data[i]["cname"]} not created due to {e}.')
+            logging.error(
+                f'User {user_data[i]["cname"]} not created due to {e}.')
 
     workbook.save(filename=f'{input_data['result_file']}.xlsx')
