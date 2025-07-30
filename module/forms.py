@@ -40,6 +40,7 @@ class InputForm:
         self.upn_suffix = tk.StringVar()
         self.result_file = tk.StringVar()
         self.logfile = tk.StringVar()
+        self.protocol = tk.StringVar(value='LDAP')
 
         # Load last values
 
@@ -113,6 +114,10 @@ class InputForm:
         self.language_var.trace_add('write', lambda *args: self.update_language(self.language_var.get()))
         language_menu = tk.OptionMenu(self.master, self.language_var, "en_US", "ru_RU")
         language_menu.grid(row=11, column=0, padx=10, pady=5)
+
+        # Protocol Selection Dropdown
+        protocol_menu = tk.OptionMenu(self.master, self.protocol, 'LDAP', 'LDAPS')
+        protocol_menu.grid(row=11, column=1, sticky='e', padx=10, pady=5)
 
     def _on_start(self):
         """

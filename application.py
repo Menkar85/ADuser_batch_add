@@ -124,6 +124,7 @@ def get_input_values():
         'upn_suffix': input_form.upn_suffix.get(),
         'result_file': input_form.result_file.get(),
         'logfile': input_form.logfile.get(),
+        'protocol': input_form.protocol.get(),
     }
 
 
@@ -144,9 +145,10 @@ if __name__ == '__main__':
     pyad_setdefaults(
         ldap_server=input_data['ldap_server'],
         username=input_data['username'],
-        password=input_data['password']
+        password=input_data['password'],
+        ssl=input_data['protocol'] == 'LDAPS',
     )
-    logging.info(f'LDAP server set to {input_data['ldap_server']}')
+    logging.info(f'LDAP server set to {input_data['ldap_server']} using {input_data['protocol']}')
 
     workbook = load_workbook(filename=f'{input_data['source_file']}')
     sheet = workbook.active
