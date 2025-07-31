@@ -3,4 +3,5 @@ data.pkl
 .idea
 .venv
 .continue
-*__pycache__*
+__pycache__/
+*.pyc
