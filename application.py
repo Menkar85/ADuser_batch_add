@@ -116,7 +116,9 @@ def get_input_values():
     root = ttk.Window(themename='darkly')
 
     # Center the window on screen
-    root.geometry('+500+150')
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+    root.geometry(f'+{screen_width//2-400}+{screen_height//2-400}')
     input_form = InputForm(root)
     root.protocol("WM_DELETE_WINDOW", close_handler)
 

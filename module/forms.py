@@ -41,6 +41,8 @@ class InputForm:
         self.result_file = ttk.StringVar()
         self.logfile = ttk.StringVar()
         self.protocol = ttk.StringVar(value='LDAP')
+        self.language_var = ttk.StringVar(value=LANGUAGE_CODE)
+        self.theme_var = ttk.StringVar(value='darkly')
 
         # Load last values
         self._load_last_values()
@@ -61,45 +63,39 @@ class InputForm:
         # Protocol dropdown
         protocol_label = ttk.Label(toolbar_frame, text="Protocol:", font=(
             "Times New Roman", 10))
-        protocol_label.pack(side='left', padx=(0, 5))
+        protocol_label.pack(side='left', padx=(30, 5))
         self.widgets_to_update['protocol_label'] = protocol_label
 
         protocol_menu = ttk.OptionMenu(
-            toolbar_frame, self.protocol, 'LDAP', 'LDAP', 'LDAPS', style='info.TMenubutton')
+            toolbar_frame, self.protocol, self.protocol.get(), 'LDAP', 'LDAPS', style='info.TMenubutton')
         protocol_menu.pack(side='left', padx=(0, 20))
 
         # Language dropdown
         language_label = ttk.Label(toolbar_frame, text="Language:", font=(
             "Times New Roman", 10))
-        language_label.pack(side='left', padx=(0, 5))
+        language_label.pack(side='left', padx=(30, 5))
         self.widgets_to_update['language_label'] = language_label
 
-        self.language_var = ttk.StringVar(value=LANGUAGE_CODE)
         self.language_var.trace_add(
             'write', lambda *args: self.update_language(self.language_var.get()))
         language_menu = ttk.OptionMenu(
-            toolbar_frame, self.language_var, LANGUAGE_CODE, "en_US", "ru_RU", style='info.TMenubutton')
+            toolbar_frame, self.language_var, self.language_var.get(), "en_US", "ru_RU", style='info.TMenubutton')
         language_menu.pack(side='left', padx=(0, 20))
 
         # Theme dropdown
         theme_label = ttk.Label(toolbar_frame, text="Theme:", font=(
             "Times New Roman", 10))
-        theme_label.pack(side='left', padx=(0, 5))
+        theme_label.pack(side='left', padx=(30, 5))
         self.widgets_to_update['theme_label'] = theme_label
 
-        self.theme_var = ttk.StringVar(value='darkly')
+        self.theme_var.trace_add(
+            'write', lambda *args: self._apply_theme())
         theme_menu = ttk.OptionMenu(
-            toolbar_frame, self.theme_var, 'darkly', 'darkly', 'cosmo', 'flatly', 'journal', 'litera',
+            toolbar_frame, self.theme_var, self.theme_var.get(
+            ), 'darkly', 'cosmo', 'flatly', 'journal', 'litera',
             'lumen', 'minty', 'pulse', 'sandstone', 'simplex', 'solar', 'superhero', 'united',
             'yeti', style='info.TMenubutton')
         theme_menu.pack(side='left', padx=(0, 20))
-
-        # Theme change button
-        theme_button = ttk.Button(
-            toolbar_frame, text="Apply Theme", command=self._apply_theme,
-            style='secondary.TButton', width=18)
-        theme_button.pack(side='left', padx=(0, 10))
-        self.widgets_to_update['theme_button'] = theme_button
 
         # Create main frame with padding
         main_frame = ttk.Frame(master, padding=20)
@@ -158,13 +154,13 @@ class InputForm:
             style='danger.TButton', width=20)
         button_cancel.pack(pady=5)
         self.widgets_to_update['button_cancel'] = button_cancel
+        self.update_language(self.language_var.get())
 
     def _apply_theme(self):
         """Apply the selected theme to the window"""
         try:
             new_theme = self.theme_var.get()
             self.master.style.theme_use(new_theme)
-            print(f"Theme changed to: {new_theme}")
         except Exception as e:
             print(f"Error applying theme: {e}")
 
@@ -178,7 +174,6 @@ class InputForm:
         confirm = Messagebox.show_question(
             _("Confirmation"),
             _("Do you want to start import?"),
-            parent=self.master
         )
 
         if confirm == "Yes":
@@ -195,7 +190,6 @@ class InputForm:
         confirm = Messagebox.show_question(
             _("Confirmation"),
             _("Are you sure you want to cancel?"),
-            parent=self.master
         )
 
         if confirm == "Yes":
@@ -280,5 +274,3 @@ class InputForm:
         for widget_name, widget in self.widgets_to_update.items():
             if widget_name in translations:
                 widget.config(text=translations[widget_name])
-
-        print(f"Language changed to: {code}")
