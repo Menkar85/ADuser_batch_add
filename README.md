@@ -4,7 +4,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/menkar85/ADuser_batch_add)](https://github.com/menkar85/ADuser_batch_add/issues)
 [![GitHub stars](https://img.shields.io/github/stars/menkar85/ADuser_batch_add)](https://github.com/menkar85/ADuser_batch_add/stargazers)
 [![Python](https://img.shields.io/badge/Python-3.7+-blue.svg)](https://www.python.org/downloads/)
-[![Version](https://img.shields.io/badge/version-0.2.1-green.svg)](https://github.com/menkar85/ADuser_batch_add/releases)
+[![Version](https://img.shields.io/badge/version-0.2.2-green.svg)](https://github.com/menkar85/ADuser_batch_add/releases)
 
 A powerful Python-based tool for automating the creation of multiple user accounts in Active Directory. This application reads user data from Excel files and efficiently creates users in your Active Directory domain with comprehensive error handling, logging, and a modern GUI interface.
 
@@ -231,14 +231,6 @@ The application is designed to be idempotent, meaning:
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🔄 Version History
-
-- **v0.2.1**: Current version with enhanced error handling and modern GUI
-- **v0.1.3**: Enhanced error handling and logging
-- **v0.1.2**: Added multi-language support
-- **v0.1.1**: Improved Excel template handling
-- **v0.1.0**: Initial release
 
 ## 🤝 Contributing
 
