@@ -3,6 +3,7 @@ import pickle
 import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from ttkbootstrap.dialogs import Messagebox
+from tkinter import filedialog
 
 from application import LANGUAGE_CODE, LAST_VALUES, LOCALE_DIR
 
@@ -52,8 +53,7 @@ class InputForm:
 
         # Create top toolbar frame
         toolbar_frame = ttk.Frame(master, padding=(10, 5))
-        toolbar_frame.grid(row=0, column=0, sticky=(
-            N, W, E, S), padx=10, pady=(5, 0))
+        toolbar_frame.grid(row=0, column=0, sticky=NSEW, padx=10, pady=(5, 0))
 
         # Configure grid weights
         master.columnconfigure(0, weight=1)
@@ -235,7 +235,7 @@ class InputForm:
             pass
 
     def _browse_filename(self):
-        file_path = ttk.filedialog.askopenfilename(
+        file_path = filedialog.askopenfilename(
             defaultextension=".xlsx",
             filetypes=(("Excel workbooks", "*.xlsx"),),
             parent=self.master
