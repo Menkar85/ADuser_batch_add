@@ -1,4 +1,4 @@
-# version 0.2.
+# version 0.2.1
 import logging
 from datetime import datetime
 
@@ -134,7 +134,6 @@ def get_input_values():
         'result_file': input_form.result_file.get(),
         'logfile': input_form.logfile.get(),
         'protocol': input_form.protocol.get(),
-        'theme': input_form.theme_var.get() if hasattr(input_form, 'theme_var') else 'darkly',
     }
 
 

@@ -213,6 +213,9 @@ class InputForm:
             'upn_suffix': self.upn_suffix.get(),
             'result_file': self.result_file.get(),
             'logfile': self.logfile.get(),
+            'protocol': self.protocol.get(),
+            'theme': self.theme_var.get(),
+            'language': self.language_var.get(),
             # 'password': self.password.get(),  # Not saved for security
         }
         with open(LAST_VALUES, 'wb') as fp:
@@ -230,6 +233,9 @@ class InputForm:
                 self.upn_suffix.set(values.get('upn_suffix', ''))
                 self.result_file.set(values.get('result_file', ''))
                 self.logfile.set(values.get('logfile', ''))
+                self.protocol.set(values.get('protocol', ''))
+                self.theme_var.set(values.get('theme', ''))
+                self.language_var.set(values.get('language', ''))
         except Exception:
             # If file is missing or corrupted, ignore and use defaults
             pass
