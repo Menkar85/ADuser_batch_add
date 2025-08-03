@@ -5,3 +5,5 @@ data.pkl
 .continue
 __pycache__/
 *.pyc
+locale/en_US/LC_MESSAGES/forms.pot
+locale/ru_RU/LC_MESSAGES/forms.pot
