@@ -5,3 +5,4 @@ data.pkl
 .continue
 __pycache__/
 *.pyc
+*.pot

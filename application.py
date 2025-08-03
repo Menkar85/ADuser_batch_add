@@ -1,4 +1,4 @@
-# version 0.1.3
+# version 0.2.
 import logging
 from datetime import datetime
 
@@ -6,6 +6,8 @@ from openpyxl import load_workbook
 from pyad import pyad_setdefaults, aduser, adcontainer
 from pyad.adcontainer import ADContainer
 from transliterate import translit
+import ttkbootstrap as ttk
+from ttkbootstrap.dialogs import Messagebox
 
 from module.forms import *
 
@@ -101,13 +103,19 @@ def get_or_create_ou(ou_name, p_dn) -> ADContainer:
 
 def get_input_values():
     def close_handler():
-        if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        confirm = Messagebox.show_question(
+            "Quit",
+            "Do you want to quit?",
+            parent=root
+        )
+        if confirm == "Yes":
             root.destroy()
             exit()
 
-    root = tk.Tk()
+    # Default theme, will be changeable in form
+    root = ttk.Window(themename='darkly')
 
-    # root.geometry(f'{width}x{height}+{(screen_width - width) // 2}+{(screen_height - height) // 2}')
+    # Center the window on screen
     root.geometry('+500+150')
     input_form = InputForm(root)
     root.protocol("WM_DELETE_WINDOW", close_handler)
@@ -126,6 +134,7 @@ def get_input_values():
         'result_file': input_form.result_file.get(),
         'logfile': input_form.logfile.get(),
         'protocol': input_form.protocol.get(),
+        'theme': input_form.theme_var.get() if hasattr(input_form, 'theme_var') else 'darkly',
     }
 
 
