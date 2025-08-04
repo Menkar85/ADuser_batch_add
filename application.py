@@ -10,11 +10,11 @@ from transliterate import translit
 
 from module.forms import *
 
-LAST_VALUES = 'data.pkl'
+LAST_VALUES = "data.pkl"
 
 # Setup gettext
-LOCALE_DIR = 'locale'  # Directory containing locale files
-LANGUAGE_CODE = 'en_US'  # Default language code
+LOCALE_DIR = "locale"  # Directory containing locale files
+LANGUAGE_CODE = "en_US"  # Default language code
 
 
 def is_user_exists(uname):
@@ -47,32 +47,38 @@ def create_ad_user(ou, upn_suffix, **kwargs):
     """
     # noinspection PyShadowingNames
     try:
-        if is_user_exists(uname=kwargs['cname']):
+        if is_user_exists(uname=kwargs["cname"]):
             if FIRST_RUN:
                 logging.error(
-                    f'Unable to create User {kwargs["cname"]} as same cname already exists! Change cname for user!')
-                raise ValueError(
-                    'Duplicate username detected. Change cname for user!')
+                    f'Unable to create User {kwargs["cname"]} as same cname already exists! Change cname for user!'
+                )
+                raise ValueError("Duplicate username detected. Change cname for user!")
             print(f'User "{kwargs['cname']}" already exists')
             logging.info(f'User "{kwargs['cname']}" already exists')
             return
         else:
-            new_user = aduser.ADUser.create(name=kwargs['cname'], container_object=ou, upn_suffix=upn_suffix,
-                                            password=kwargs['passwd'])
-            new_user.update_attributes({
-                'displayName': kwargs['full_name'],
-                'mail': kwargs['email'],
-                'userPrincipalName': f"{kwargs['cname']}@{upn_suffix}",
-                'sn': kwargs['surname'],
-                'givenName': str(kwargs['full_name'].split()[1]),
-                'telephoneNumber': str(kwargs.get('phone')),
-            })
+            new_user = aduser.ADUser.create(
+                name=kwargs["cname"],
+                container_object=ou,
+                upn_suffix=upn_suffix,
+                password=kwargs["passwd"],
+            )
+            new_user.update_attributes(
+                {
+                    "displayName": kwargs["full_name"],
+                    "mail": kwargs["email"],
+                    "userPrincipalName": f"{kwargs['cname']}@{upn_suffix}",
+                    "sn": kwargs["surname"],
+                    "givenName": str(kwargs["full_name"].split()[1]),
+                    "telephoneNumber": str(kwargs.get("phone")),
+                }
+            )
             new_user.force_pwd_change_on_login()
             logging.info(f'User "{new_user.name}" created successfully')
     except Exception as e:
-        print('Following error occurred: ', e)
-        print(f'for user {kwargs['cname']}')
-        logging.error(f'User {kwargs['cname']} was not created: {e}')
+        print("Following error occurred: ", e)
+        print(f"for user {kwargs['cname']}")
+        logging.error(f"User {kwargs['cname']} was not created: {e}")
         raise e
 
 
@@ -89,7 +95,7 @@ def get_or_create_ou(ou_name, p_dn) -> ADContainer:
     """
     global FIRST_RUN
     try:
-        ou = adcontainer.ADContainer.from_dn(f'OU={ou_name},{p_dn}')
+        ou = adcontainer.ADContainer.from_dn(f"OU={ou_name},{p_dn}")
         logging.info(f'OU "{ou_name}" already exists')
         if ou_name == target and FIRST_RUN:
             FIRST_RUN = False
@@ -103,22 +109,18 @@ def get_or_create_ou(ou_name, p_dn) -> ADContainer:
 
 def get_input_values():
     def close_handler():
-        confirm = Messagebox.show_question(
-            "Quit",
-            "Do you want to quit?",
-            parent=root
-        )
+        confirm = Messagebox.show_question("Quit", "Do you want to quit?", parent=root)
         if confirm == "Yes":
             root.destroy()
             exit()
 
     # Default theme, will be changeable in form
-    root = ttk.Window(themename='darkly')
+    root = ttk.Window(themename="darkly")
 
     # Center the window on screen
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
-    root.geometry(f'+{screen_width // 2 - 400}+{screen_height // 2 - 400}')
+    root.geometry(f"+{screen_width // 2 - 400}+{screen_height // 2 - 400}")
     input_form = InputForm(root)
     root.protocol("WM_DELETE_WINDOW", close_handler)
 
@@ -126,46 +128,48 @@ def get_input_values():
 
     # Return the input values after the main loop has finished
     return {
-        'ldap_server': input_form.ldap_server.get(),
-        'username': input_form.username.get(),
-        'password': input_form.password.get(),
-        'source_file': input_form.source_file.get(),
-        'destination_ou': input_form.destination_ou.get(),
-        'domain': input_form.domain.get(),
-        'upn_suffix': input_form.upn_suffix.get(),
-        'result_file': input_form.result_file.get(),
-        'logfile': input_form.logfile.get(),
-        'protocol': input_form.protocol.get(),
+        "ldap_server": input_form.ldap_server.get(),
+        "username": input_form.username.get(),
+        "password": input_form.password.get(),
+        "source_file": input_form.source_file.get(),
+        "destination_ou": input_form.destination_ou.get(),
+        "domain": input_form.domain.get(),
+        "upn_suffix": input_form.upn_suffix.get(),
+        "result_file": input_form.result_file.get(),
+        "logfile": input_form.logfile.get(),
+        "protocol": input_form.protocol.get(),
     }
 
 
 # Main program start
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     FIRST_RUN = True
     GROUP_YEAR = None
 
     input_data = get_input_values()
 
-    logging.basicConfig(level=logging.INFO,
-                        filename=f'{input_data['logfile']}.txt', filemode='w')
+    logging.basicConfig(
+        level=logging.INFO, filename=f"{input_data['logfile']}.txt", filemode="w"
+    )
 
-    logging.info(f'Import started at {datetime.now()}')
-    logging.info(f'Data import from {input_data['source_file']} started')
+    logging.info(f"Import started at {datetime.now()}")
+    logging.info(f"Data import from {input_data['source_file']} started")
 
     adbase.set_defaults(
-        ldap_server=input_data['ldap_server'],
-        username=input_data['username'],
-        password=input_data['password'],
-        ssl=input_data['protocol'] == 'LDAPS',
+        ldap_server=input_data["ldap_server"],
+        username=input_data["username"],
+        password=input_data["password"],
+        ssl=input_data["protocol"] == "LDAPS",
     )
     logging.info(
-        f'LDAP server set to {input_data['ldap_server']} using {input_data['protocol']}')
+        f"LDAP server set to {input_data['ldap_server']} using {input_data['protocol']}"
+    )
 
-    workbook = load_workbook(filename=f'{input_data['source_file']}')
+    workbook = load_workbook(filename=f"{input_data['source_file']}")
     sheet = workbook.active
-    logging.info(f'Workbook {input_data['source_file']} loaded')
+    logging.info(f"Workbook {input_data['source_file']} loaded")
 
     # Get data into variable
 
@@ -175,55 +179,60 @@ if __name__ == '__main__':
         if surname.value is not None:
             GROUP_YEAR = str(group_year.value)
             eng_surname = translit(
-                str(surname.value), language_code='ru', reversed=True)
+                str(surname.value), language_code="ru", reversed=True
+            )
             cname = str(eng_surname) + str(group_year.value)
-            email.value = ''.join([cname, '@', input_data['domain']])
-            user_data.append({
-                'cname': cname,
-                'surname': surname.value,
-                'passwd': passwd.value,
-                'full_name': full_name.value,
-                'phone': phone.value,
-                'eng_surname': eng_surname,
-                'group_year': group_year.value,
-                'email': email.value})
+            email.value = "".join([cname, "@", input_data["domain"]])
+            user_data.append(
+                {
+                    "cname": cname,
+                    "surname": surname.value,
+                    "passwd": passwd.value,
+                    "full_name": full_name.value,
+                    "phone": phone.value,
+                    "eng_surname": eng_surname,
+                    "group_year": group_year.value,
+                    "email": email.value,
+                }
+            )
         else:
             break
 
-    logging.info(f'User data collected from excel workbook.')
+    logging.info(f"User data collected from excel workbook.")
 
     # Create OUs
     destination_ou_list = [
-        value for value in input_data['destination_ou'].split('/') if value]
+        value for value in input_data["destination_ou"].split("/") if value
+    ]
     parent_dn = f"DC={',DC='.join(input_data['domain'].split('.'))}"
     if destination_ou_list:
         target = destination_ou_list[-1]
         target_ou = {}
         for i, dn in enumerate(destination_ou_list):
-            target_ou[f'{i}'] = dn
+            target_ou[f"{i}"] = dn
         if target_ou:
             for i in range(len(target_ou)):
-                parent = get_or_create_ou(target_ou[f'{i}'], parent_dn)
+                parent = get_or_create_ou(target_ou[f"{i}"], parent_dn)
                 parent_dn = parent.dn
             # noinspection PyUnboundLocalVariable
             user_creation_ou = parent
     else:
         user_creation_ou = adcontainer.ADContainer.from_dn(parent_dn)
-        logging.info('Target OU for user creation is root.')
+        logging.info("Target OU for user creation is root.")
 
     # Insert data into AD and register success
 
     for i in range(0, len(user_data)):
         try:
             # noinspection PyUnboundLocalVariable
-            create_ad_user(ou=user_creation_ou,
-                           upn_suffix=input_data['upn_suffix'], **user_data[i])
-            sheet.cell(row=i + 2, column=9, value='Y')
-            sheet.cell(row=i + 2, column=6, value=user_data[i]['eng_surname'])
+            create_ad_user(
+                ou=user_creation_ou, upn_suffix=input_data["upn_suffix"], **user_data[i]
+            )
+            sheet.cell(row=i + 2, column=9, value="Y")
+            sheet.cell(row=i + 2, column=6, value=user_data[i]["eng_surname"])
         except Exception as e:
-            sheet.cell(row=i + 2, column=9, value='N')
-            sheet.cell(row=i + 2, column=10, value=f'Error {e}')
-            logging.error(
-                f'User {user_data[i]["cname"]} not created due to {e}.')
+            sheet.cell(row=i + 2, column=9, value="N")
+            sheet.cell(row=i + 2, column=10, value=f"Error {e}")
+            logging.error(f'User {user_data[i]["cname"]} not created due to {e}.')
 
-    workbook.save(filename=f'{input_data['result_file']}.xlsx')
+    workbook.save(filename=f"{input_data['result_file']}.xlsx")
