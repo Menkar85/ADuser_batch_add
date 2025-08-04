@@ -3,11 +3,10 @@ import logging
 from datetime import datetime
 
 from openpyxl import load_workbook
-from pyad import pyad_setdefaults, aduser, adcontainer
+
+from pyad import aduser, adcontainer, adbase
 from pyad.adcontainer import ADContainer
 from transliterate import translit
-import ttkbootstrap as ttk
-from ttkbootstrap.dialogs import Messagebox
 
 from module.forms import *
 
@@ -31,7 +30,7 @@ def is_user_exists(uname):
     try:
         aduser.ADUser.from_cn(uname)
         return True
-    except Exception as e:
+    except Exception:
         return False
 
 
@@ -46,6 +45,7 @@ def create_ad_user(ou, upn_suffix, **kwargs):
     Returns: None
 
     """
+    # noinspection PyShadowingNames
     try:
         if is_user_exists(uname=kwargs['cname']):
             if FIRST_RUN:
@@ -94,7 +94,7 @@ def get_or_create_ou(ou_name, p_dn) -> ADContainer:
         if ou_name == target and FIRST_RUN:
             FIRST_RUN = False
         return ou
-    except Exception as e:
+    except Exception:
         parent_container = adcontainer.ADContainer.from_dn(p_dn)
         ou = parent_container.create_container(ou_name)
         logging.info(f'OU "{ou_name}" created successfully')
@@ -118,7 +118,7 @@ def get_input_values():
     # Center the window on screen
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
-    root.geometry(f'+{screen_width//2-400}+{screen_height//2-400}')
+    root.geometry(f'+{screen_width // 2 - 400}+{screen_height // 2 - 400}')
     input_form = InputForm(root)
     root.protocol("WM_DELETE_WINDOW", close_handler)
 
@@ -154,7 +154,7 @@ if __name__ == '__main__':
     logging.info(f'Import started at {datetime.now()}')
     logging.info(f'Data import from {input_data['source_file']} started')
 
-    pyad_setdefaults(
+    adbase.set_defaults(
         ldap_server=input_data['ldap_server'],
         username=input_data['username'],
         password=input_data['password'],
@@ -205,6 +205,7 @@ if __name__ == '__main__':
             for i in range(len(target_ou)):
                 parent = get_or_create_ou(target_ou[f'{i}'], parent_dn)
                 parent_dn = parent.dn
+            # noinspection PyUnboundLocalVariable
             user_creation_ou = parent
     else:
         user_creation_ou = adcontainer.ADContainer.from_dn(parent_dn)
@@ -214,6 +215,7 @@ if __name__ == '__main__':
 
     for i in range(0, len(user_data)):
         try:
+            # noinspection PyUnboundLocalVariable
             create_ad_user(ou=user_creation_ou,
                            upn_suffix=input_data['upn_suffix'], **user_data[i])
             sheet.cell(row=i + 2, column=9, value='Y')
